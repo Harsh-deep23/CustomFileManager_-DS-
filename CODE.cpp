@@ -8,6 +8,10 @@
 #include <chrono>//allowing the compiler to understand exact time measurements like milliseconds.
 using namespace std;
 // 2)
+const string BLUE = "\033[1;34m";
+const string GREEN = "\033[0;32m";
+const string CYAN = "\033[1;36m";
+const string RESET = "\033[0m";
 void bootSequeuce()
 {
 // Just removing everything else from the screen
@@ -108,7 +112,10 @@ public:
     {
         for (auto p : currentDir->children)
         {
-            cout << p.first << "\n";
+            if (p.second->isDirectory)
+                cout << BLUE << p.first << RESET << "\n";
+            else
+                cout << GREEN << p.first << RESET << "\n";
         }
     }
 
@@ -127,7 +134,10 @@ public:
         {
             if (p.first.size() >= ext.size() && p.first.substr(p.first.size() - ext.size()) == ext)
             {
-                cout << p.first << "\n";
+                if (p.second->isDirectory)
+                    cout << BLUE << p.first << RESET << "\n";
+                else
+                    cout << GREEN << p.first << RESET << "\n";
             }
         }
     }
@@ -419,14 +429,18 @@ public:
     {
         for (auto i : node->children)
         {
-            for (int i = 0; i < depth; i++)
+            for (int j = 0; j < depth; j++)
             {
                 cout << '\t';
             }
-            cout << "|-- " << i.first << '\n';
             if (i.second->isDirectory)
             {
+                cout << "|-- " << BLUE << i.first << RESET << '\n';
                 treeHelper(i.second, depth + 1);
+            }
+            else
+            {
+                cout << "|-- " << GREEN << i.first << RESET << '\n';
             }
         }
     }
@@ -460,7 +474,9 @@ public:
         string input;
         while (true)
         {
-            cout << "nanofs> ";
+            string currentPath = "";
+            pathFinder(currentDir, currentPath);
+            cout << GREEN << "user@nanofs:" << BLUE << currentPath << RESET << "$ ";
             getline(cin, input);
 
             if (input.empty())
