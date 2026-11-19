@@ -467,7 +467,35 @@ public:
         system("clear");
 #endif
     }
+    void grepHelper(FileNode *node, string currentPath, const string &keyword, bool &found)
+    {
+        for (auto const &p : node->children)
+        {
+            FileNode *child = p.second;
+            string nextPath = (currentPath == "/") ? ("/" + child->name) : (currentPath + "/" + child->name);
 
+            if (child->isDirectory)
+            {
+                if (child->name != ".trash")
+                    grepHelper(child, nextPath, keyword, found);
+            }
+            else
+            {
+                if (child->content.find(keyword) != string::npos)
+                {
+                    cout << GREEN << nextPath << RESET << "\n";
+                    found = true;
+                }
+            }
+        }
+    }
+    void grep(const string &keyword)
+    {
+        bool found = false;
+        grepHelper(root, "/", keyword, found);
+        if (!found)
+            cout << "No matches found for: " << keyword << "\n";
+    }
     void run()
     {
         load();
@@ -555,6 +583,8 @@ public:
                     restore(arg);
                 else if (cmd == "ls")
                     lsWildcard(arg);
+                else if (cmd == "grep")
+                    grep(arg);
             }
             else if (!input.empty())
             {
