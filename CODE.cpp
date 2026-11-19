@@ -496,6 +496,45 @@ public:
         if (!found)
             cout << "No matches found for: " << keyword << "\n";
     }
+    void statsHelper(FileNode *node, int &dirCount, int &fileCount, int &totalBytes)
+    {
+        for (auto const &p : node->children)
+        {
+            FileNode *child = p.second;
+            if (child->name == ".trash")
+                continue;
+            if (child->isDirectory)
+            {
+                dirCount++;
+                statsHelper(child, dirCount, fileCount, totalBytes);
+            }
+            else
+            {
+                fileCount++;
+                totalBytes += child->content.length();
+            }
+        }
+    }
+    void nanofetch()
+    {
+        int dirCount = 0;
+        int fileCount = 0;
+        int totalBytes = 0;
+        statsHelper(root, dirCount, fileCount, totalBytes);
+
+        string currentPath = "";
+        pathFinder(currentDir, currentPath);
+
+        cout << "\n";
+        cout << CYAN << "   _  __              ___  ___ " << RESET << "  " << GREEN << "user@nanofs" << RESET << "\n";
+        cout << CYAN << "  / |/ /__ ____  ___ / _/ / __/" << RESET << "  " << "--------------------" << "\n";
+        cout << CYAN << " /    / _ `/ _ \\/ _ \\ _/_ \\ \\  " << RESET << "  " << BLUE << "FS: " << RESET << "NanoFS v1.0\n";
+        cout << CYAN << "/_/|_/\\_,_/_//_/\\___/_/ /___/  " << RESET << "  " << BLUE << "Path: " << RESET << currentPath << "\n";
+        cout << CYAN << "                               " << RESET << "  " << BLUE << "Directories: " << RESET << dirCount << "\n";
+        cout << CYAN << "                               " << RESET << "  " << BLUE << "Files: " << RESET << fileCount << "\n";
+        cout << CYAN << "                               " << RESET << "  " << BLUE << "Used Space: " << RESET << totalBytes << " Bytes\n";
+        cout << "\n";
+    }
     void run()
     {
         load();
@@ -544,6 +583,11 @@ public:
             if (input == "tree")
             {
                 tree();
+                continue;
+            }
+            if (input == "nanofetch")
+            {
+                nanofetch();
                 continue;
             }
 
