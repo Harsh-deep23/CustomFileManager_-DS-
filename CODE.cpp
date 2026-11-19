@@ -474,7 +474,9 @@ public:
         string input;
         while (true)
         {
-            cout << "nanofs> ";
+            string currentPath = "";
+            pathFinder(currentDir, currentPath);
+            cout << GREEN << "user@nanofs:" << BLUE << currentPath << RESET << "$ ";
             getline(cin, input);
 
             if (input.empty())
